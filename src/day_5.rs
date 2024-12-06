@@ -13,7 +13,7 @@ pub fn part_1(input: &str) -> String {
         // Pages which need to be printed regardless of order
         let update_pages: HashSet<i32> = pages.iter().cloned().collect();
 
-        let mut right_order = true;
+        let mut right_order: bool = true;
         let mut printed_pages = HashSet::new();
         for page in &pages {
             // Identify if the current page has any rules
@@ -42,8 +42,59 @@ pub fn part_1(input: &str) -> String {
     ans.to_string()
 }
 
+// Some characteristics I observed by testing my input
+// - There are always an odd number of pages for an update
+// - No page is duplicated in an update
+// - Each page in an update has a unique number of pages to be printed before it
+// The last two properties imply that the correct order can be determined simply by the number of pages each page requires to be printed before it
+// Incidentally this also applies for the ones already in the correct order
 pub fn part_2(input: &str) -> String {
-    todo!();
+    let (page_ordering_rules, updates) = parse_input(input);
+
+    let mut ans = 0;
+    for line in updates.lines() {
+        let pages = line
+            .split(',')
+            .map(|s| s.trim().parse::<i32>().unwrap())
+            .collect::<Vec<i32>>();
+
+        // Pages which need to be printed regardless of order
+        let update_pages: HashSet<i32> = pages.iter().cloned().collect();
+
+        let mut right_order: bool = true;
+        let mut printed_pages = HashSet::new();
+
+        let middle_page_index = (pages.len() - 1) / 2;
+
+        // This will be discovered by iterating through the pages
+        let mut correct_middle_page = None;
+
+        for page in &pages {
+            // Identify if the current page has any rules
+            if let Some(rule_required_pages) = page_ordering_rules.get(&page) {
+                // Identify which pages are required based on the pages to be printed
+                let required_pages = update_pages
+                    .intersection(rule_required_pages)
+                    .cloned()
+                    .collect::<HashSet<i32>>();
+                if required_pages.len() == middle_page_index {
+                    correct_middle_page = Some(*page);
+                }
+                if !required_pages.is_subset(&printed_pages) {
+                    right_order = false;
+                }
+            }
+
+            printed_pages.insert(*page);
+        }
+
+        if !right_order {
+          // We are guaranteed to know the correct middle page based on the above observations
+            ans += correct_middle_page.unwrap();
+        }
+    }
+
+    ans.to_string()
 }
 
 // page_ordering_rules is a map describing the pages that must be printed before a given page

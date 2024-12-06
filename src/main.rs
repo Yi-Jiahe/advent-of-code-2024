@@ -16,8 +16,11 @@ fn main() {
 
     match day.as_str() {
         "1" => {
-            let ans_part_1 = day_1::part_1(input);
+            let ans_part_1 = day_1::part_1(&input);
             println!("Part 1: {}", ans_part_1);
+
+            let ans_part_2 = day_1::part_2(&input);
+            println!("Part 2: {}", ans_part_2);
         },
         _ => todo!(),
     };

@@ -9,8 +9,6 @@ pub fn part_1(input: &str) -> String {
     // The word search is a rectangle
     let n = word_search[0].len();
 
-    dbg!(m, n);
-
     let mut appearances = 0;
 
     let directions = [
@@ -54,5 +52,47 @@ pub fn part_1(input: &str) -> String {
 }
 
 pub fn part_2(input: &str) -> String {
-    todo!()
+    let mut word_search: Vec<Vec<char>> = Vec::new();
+
+    for line in input.lines() {
+        word_search.push(line.chars().collect::<Vec<char>>());
+    }
+
+    let m = word_search.len();
+    // The word search is a rectangle
+    let n = word_search[0].len();
+
+    let up_left = (-1, -1);
+    let down_right = (1, 1);
+    let down_left = (-1, 1);
+    let up_right = (1, -1);
+
+    let mut appearances: i32 = 0;
+
+    for i in 1..m - 1 {
+        for j in 1..n - 1 {
+            if word_search[i][j] != 'A' {
+                continue;
+            }
+
+            let top_left = ((j as i32 + up_left.0) as usize, (i as i32 + up_left.1) as usize);
+            let bottom_right = ((j as i32 + down_right.0) as usize, (i as i32 + down_right.1) as usize);
+            let bottom_left = ((j as i32 + down_left.0) as usize, (i as i32 + down_left.1) as usize);
+            let top_right = ((j as i32 + up_right.0) as usize, (i as i32 + up_right.1) as usize);
+
+            if ((word_search[top_left.1][top_left.0] == 'M'
+                && word_search[bottom_right.1][bottom_right.0] == 'S')
+                || (word_search[top_left.1][top_left.0] == 'S'
+                    && word_search[bottom_right.1][bottom_right.0] == 'M'))
+                && ((word_search[bottom_left.1][bottom_left.0] == 'M'
+                    && word_search[top_right.1][top_right.0] == 'S')
+                    || (word_search[bottom_left.1][bottom_left.0] == 'S'
+                        && word_search[top_right.1][top_right.0] == 'M'))
+            {
+              appearances += 1;
+            }
+        }
+    }
+
+    appearances.to_string()
 }

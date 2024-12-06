@@ -25,6 +25,9 @@ fn main() {
         "2" => {
             let ans_part_1 = day_2::part_1(&input);
             println!("Part 1: {}", ans_part_1);
+
+            let ans_part_2 = day_2::part_2(&input);
+            println!("Part 2: {}", ans_part_2);
         }
         _ => todo!(),
     };

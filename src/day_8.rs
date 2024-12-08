@@ -8,6 +8,7 @@ pub fn part_1(input: &str) -> String {
     for (_frequency, positions) in antennas.iter() {
         for i in 0..positions.len() {
             for j in i + 1..positions.len() {
+                // Antinodes have to be inline and outside of the antennas
                 let (x1, y1) = positions[i];
                 let (x2, y2) = positions[j];
 
@@ -34,7 +35,48 @@ pub fn part_1(input: &str) -> String {
 }
 
 pub fn part_2(input: &str) -> String {
-    todo!()
+    let ((m, n), antennas) = parse_map(input);
+
+    let mut valid_antinodes: HashSet<(usize, usize)> = HashSet::new();
+
+    for (_frequency, positions) in antennas.iter() {
+        for i in 0..positions.len() {
+            for j in i + 1..positions.len() {
+                let (x1, y1) = positions[i];
+                let (x2, y2) = positions[j];
+
+                let v = (x2 as i32 - x1 as i32, y2 as i32 - y1 as i32);
+
+                // The antennas themselves are antinodes for whatever reason
+                let mut i = 0;
+                loop {
+                    let a = (x2 as i32 + i * v.0, y2 as i32 + i * v.1);
+
+                    if a.0 < 0 || a.0 >= n as i32 || a.1 < 0 || a.1 >= m as i32 {
+                        break;
+                    }
+
+                    valid_antinodes.insert((a.0 as usize, a.1 as usize));
+
+                    i += 1;
+                }
+
+                i = 0;
+                loop {
+                    let a = (x1 as i32 - i * v.0, y1 as i32 - i * v.1);
+
+                    if a.0 < 0 || a.0 >= n as i32 || a.1 < 0 || a.1 >= m as i32 {
+                        break;
+                    }
+
+                    valid_antinodes.insert((a.0 as usize, a.1 as usize));
+
+                    i += 1;
+                }
+            }
+        }
+    }
+    valid_antinodes.len().to_string()
 }
 
 fn parse_map(input: &str) -> ((usize, usize), HashMap<char, Vec<(usize, usize)>>) {

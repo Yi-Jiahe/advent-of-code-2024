@@ -1,9 +1,11 @@
 use std::{env, fs, path::Path};
 
-use advent_of_code_2024::{day_1, day_2, day_3, day_4, day_5, day_6, day_7, day_8};
+use advent_of_code_2024::{day_1, day_2, day_3, day_4, day_5, day_6, day_7, day_8, day_9};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+
+    dbg!(&args);
 
     let day = &args[1];
 
@@ -66,6 +68,13 @@ fn main() {
             println!("Part 1: {}", ans_part_1);
 
             let ans_part_2 = day_8::part_2(&input);
+            println!("Part 2: {}", ans_part_2);
+        }
+        "9" => {
+            let ans_part_1 = day_9::part_1(&input);
+            println!("Part 1: {}", ans_part_1);
+
+            let ans_part_2 = day_9::part_2(&input);
             println!("Part 2: {}", ans_part_2);
         }
         _ => todo!(),

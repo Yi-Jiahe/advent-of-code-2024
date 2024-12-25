@@ -7,7 +7,7 @@ pub fn part_1(input: &str) -> String {
     for y in 0..topographic_map.len() {
         for x in 0..topographic_map[y].len() {
             if topographic_map[y][x] == 0 {
-                ans += search_trail(&topographic_map, (x, y));
+                ans += score_trailhead(&topographic_map, (x, y));
             }
         }
     }
@@ -16,7 +16,18 @@ pub fn part_1(input: &str) -> String {
 }
 
 pub fn part_2(input: &str) -> String {
-    unimplemented!();
+    let topographic_map = parse_map(input);
+
+    let mut ans = 0;
+    for y in 0..topographic_map.len() {
+        for x in 0..topographic_map[y].len() {
+            if topographic_map[y][x] == 0 {
+                ans += rate_trailhead(&topographic_map, (x, y));
+            }
+        }
+    }
+
+    ans.to_string()
 }
 
 fn parse_map(input: &str) -> Vec<Vec<u32>> {
@@ -28,7 +39,7 @@ fn parse_map(input: &str) -> Vec<Vec<u32>> {
     topographic_map
 }
 
-fn search_trail(topographic_map: &Vec<Vec<u32>>, position: (usize, usize)) -> usize {
+fn score_trailhead(topographic_map: &Vec<Vec<u32>>, position: (usize, usize)) -> usize {
     let mut stack: Vec<(usize, usize)> = Vec::new();
     let mut peaks: HashSet<(usize, usize)> = HashSet::new();
     let mut visited: HashSet<(usize, usize)> = HashSet::new();
@@ -69,4 +80,34 @@ fn search_trail(topographic_map: &Vec<Vec<u32>>, position: (usize, usize)) -> us
     }
 
     peaks.len()
+}
+
+fn rate_trailhead(topographic_map: &Vec<Vec<u32>>, position: (usize, usize)) -> u32 {
+  let mut rating = 0;
+
+  let curr_height = topographic_map[position.1][position.0];
+
+  for (dx, dy) in [(-1, 0), (1, 0), (0, -1), (0, 1)] {
+    let next_temp = (position.0 as i32 + dx, position.1 as i32 + dy);
+    if next_temp.0 < 0
+      || next_temp.0 >= topographic_map[0].len() as i32
+      || next_temp.1 < 0
+      || next_temp.1 >= topographic_map.len() as i32
+    {
+      continue;
+    }
+
+    let next = (next_temp.0 as usize, next_temp.1 as usize);
+    let next_height = topographic_map[next.1 as usize][next.0 as usize];
+    if next_height > curr_height && next_height - curr_height == 1 {
+      if next_height == 9 {
+        rating += 1;
+        continue;
+      }
+      // No need to keep track of past because the trails being strictly increasing will take care of that
+      rating += rate_trailhead(topographic_map, next);
+    }
+  }
+
+  rating
 }
